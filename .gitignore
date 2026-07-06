@@ -1,0 +1,41 @@
+# ─── Python ───────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ─── GitForge repository data (runtime SQLite stores) ──────────────────────
+*.gitforge/
+*.db
+*.db-wal
+*.db-shm
+.gitforge-data/
+
+# ─── Node / frontend ───────────────────────────────────────────────────────
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.local
+coverage/
+
+# ─── Editor / OS ───────────────────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+
+# ─── Env ───────────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
