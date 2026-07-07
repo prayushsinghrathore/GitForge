@@ -38,6 +38,9 @@ export interface RepoState {
   // command palette
   paletteOpen: boolean
 
+  // activity log (mutation feedback surfaced in the bottom bar)
+  activity: string[]
+
   // time machine
   timeMachine: TimeMachineState
 
@@ -51,6 +54,7 @@ export interface RepoState {
   setSearchOpen: (open: boolean) => void
   setPaletteOpen: (open: boolean) => void
   togglePalette: () => void
+  pushActivity: (line: string) => void
   toggleTimeMachine: (bounds?: { min: number; max: number }) => void
   setTimeCursor: (cursor: number) => void
   setTimePlaying: (playing: boolean) => void
@@ -72,6 +76,8 @@ export const useRepoStore = create<RepoState>((set) => ({
 
   paletteOpen: false,
 
+  activity: [],
+
   timeMachine: { enabled: false, cursor: Number.POSITIVE_INFINITY, playing: false, speed: 1 },
 
   selectCommit: (id) => set({ selectedCommitId: id, inspectorOpen: id !== null }),
@@ -83,6 +89,7 @@ export const useRepoStore = create<RepoState>((set) => ({
   setSearchOpen: (open) => set({ searchOpen: open }),
   setPaletteOpen: (open) => set({ paletteOpen: open }),
   togglePalette: () => set((s) => ({ paletteOpen: !s.paletteOpen })),
+  pushActivity: (line) => set((s) => ({ activity: [...s.activity, line].slice(-100) })),
 
   toggleTimeMachine: (bounds) =>
     set((s) => {

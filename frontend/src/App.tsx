@@ -2,6 +2,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { MainPanel } from '@/components/layout/MainPanel'
 import { RightPanelContent } from '@/components/layout/RightPanelContent'
 import { CommandPalette } from '@/components/command/CommandPalette'
+import { useRepoStore } from '@/store/useRepoStore'
 
 /**
  * Root view. The center stage and right rail are driven by store state
@@ -9,9 +10,14 @@ import { CommandPalette } from '@/components/command/CommandPalette'
  * command palette mounts once at the root and listens for ⌘K / "/".
  */
 export default function App() {
+  const activity = useRepoStore((s) => s.activity)
   return (
     <>
-      <AppShell center={<MainPanel />} right={<RightPanelContent />} />
+      <AppShell
+        center={<MainPanel />}
+        right={<RightPanelContent />}
+        activity={activity}
+      />
       <CommandPalette />
     </>
   )

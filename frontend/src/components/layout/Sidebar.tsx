@@ -9,8 +9,7 @@ import {
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { useRepoStore, type PanelView } from '@/store/useRepoStore'
-import { useBranches } from '@/lib/hooks/queries'
-import { laneColor } from '@/lib/format'
+import { BranchList } from '@/components/branches/BranchList'
 
 interface NavItem {
   key: PanelView | 'search' | 'timemachine' | 'settings'
@@ -32,7 +31,7 @@ export function Sidebar() {
   const togglePalette = useRepoStore((s) => s.togglePalette)
   const toggleTimeMachine = useRepoStore((s) => s.toggleTimeMachine)
   const tmEnabled = useRepoStore((s) => s.timeMachine.enabled)
-  const { data: branches } = useBranches()
+  const pushActivity = useRepoStore((s) => s.pushActivity)
 
   return (
     <aside className="glass flex w-[248px] shrink-0 flex-col gap-1 rounded-none border-y-0 border-l-0 p-3">
@@ -72,32 +71,7 @@ export function Sidebar() {
       <div className="my-3 h-px bg-border/50" />
 
       {/* Branch list */}
-      <div className="min-h-0 flex-1 overflow-y-auto scroll-slim px-1">
-        <div className="mb-2 flex items-center justify-between px-2">
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-            Branches
-          </span>
-          <span className="text-[10px] text-muted-foreground/70">{branches?.length ?? 0}</span>
-        </div>
-        <ul className="flex flex-col gap-0.5">
-          {branches?.map((b, i) => (
-            <li key={b.name}>
-              <div className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:bg-accent/50 hover:text-foreground">
-                <span
-                  className="size-2 shrink-0 rounded-full"
-                  style={{ background: laneColor(i) }}
-                />
-                <span className="truncate font-mono">{b.name}</span>
-                {b.is_current && (
-                  <span className="ml-auto rounded bg-primary/15 px-1.5 py-0.5 text-[9px] font-medium text-primary">
-                    HEAD
-                  </span>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <BranchList onNotify={pushActivity} />
 
       {/* Footer actions */}
       <div className="mt-2 flex items-center gap-1 border-t border-border/50 pt-3">
