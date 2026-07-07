@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────────────────
+   GitForge design tokens — a single dark, glassmorphic theme.
+   Values use the shadcn/ui HSL-channel convention (H S% L%) so Tailwind can
+   compose them with opacity modifiers, e.g. `hsl(var(--border) / 0.5)`.
+   ───────────────────────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    /* Surfaces — near-black, cool-tinted */
+    --background: 240 24% 5%;
+    --foreground: 220 20% 92%;
+
+    --card: 240 20% 8%;
+    --card-foreground: 220 20% 92%;
+
+    --popover: 240 24% 7%;
+    --popover-foreground: 220 20% 94%;
+
+    --primary: 256 90% 66%;
+    --primary-foreground: 240 24% 6%;
+
+    --secondary: 240 14% 14%;
+    --secondary-foreground: 220 16% 88%;
+
+    --muted: 240 12% 14%;
+    --muted-foreground: 240 8% 62%;
+
+    --accent: 240 14% 16%;
+    --accent-foreground: 220 20% 94%;
+
+    --destructive: 352 82% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 14% 18%;
+    --input: 240 14% 18%;
+    --ring: 256 90% 66%;
+
+    --radius: 0.85rem;
+
+    /* GitForge accent palette (also used for graph swim-lanes) */
+    --forge-violet: 256 90% 66%;
+    --forge-cyan: 189 94% 55%;
+    --forge-fuchsia: 291 84% 62%;
+    --forge-emerald: 158 74% 50%;
+    --forge-amber: 38 92% 58%;
+    --forge-rose: 346 84% 62%;
+
+    /* Glass surface */
+    --glass-bg: 240 20% 9%;
+    --glass-border: 240 20% 96%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    text-rendering: optimizeLegibility;
+    overflow: hidden; /* the app manages its own scroll regions */
+  }
+
+  /* Ambient background wash behind the whole app */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: hsl(var(--background));
+    background-image: radial-gradient(
+        1200px 600px at 15% -10%,
+        hsl(var(--forge-violet) / 0.16),
+        transparent 60%
+      ),
+      radial-gradient(1000px 520px at 100% 0%, hsl(var(--forge-cyan) / 0.1), transparent 55%),
+      radial-gradient(900px 600px at 50% 120%, hsl(var(--forge-fuchsia) / 0.08), transparent 60%);
+  }
+}
+
+@layer components {
+  /* Frosted-glass panel — the app's signature surface */
+  .glass {
+    background: hsl(var(--glass-bg) / 0.55);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid hsl(var(--glass-border) / 0.08);
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 0 hsl(var(--glass-border) / 0.06);
+  }
+
+  .glass-strong {
+    background: hsl(var(--glass-bg) / 0.8);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    border: 1px solid hsl(var(--glass-border) / 0.1);
+  }
+
+  /* Gradient text for headings / brand */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      120deg,
+      hsl(var(--forge-violet)),
+      hsl(var(--forge-cyan))
+    );
+  }
+
+  /* Hairline separators that read on dark glass */
+  .hairline {
+    border-color: hsl(var(--glass-border) / 0.08);
+  }
+}
+
+@layer utilities {
+  /* Custom slim scrollbars, dark-native */
+  .scroll-slim {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+  .scroll-slim::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scroll-slim::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.25);
+    border-radius: 9999px;
+  }
+  .scroll-slim::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+  }
+  .scroll-slim::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
