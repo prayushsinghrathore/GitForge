@@ -15,6 +15,8 @@ import { buildFlow } from './graphLayout'
 import { useGraph } from '@/lib/hooks/queries'
 import { useRepoStore } from '@/store/useRepoStore'
 import { Skeleton } from '@/components/ui/skeleton'
+import { TimeMachineBar } from '@/components/timemachine/TimeMachineBar'
+import type { CommitGraphDTO } from '@/lib/api/types'
 
 const nodeTypes: NodeTypes = { commit: CommitNode }
 const edgeTypes: EdgeTypes = { commit: CommitEdge }
@@ -30,17 +32,33 @@ export function CommitGraph() {
   const hoveredId = useRepoStore((s) => s.hoveredCommitId)
   const selectCommit = useRepoStore((s) => s.selectCommit)
   const hoverCommit = useRepoStore((s) => s.hoverCommit)
+  const tm = useRepoStore((s) => s.timeMachine)
+
+  // When the Time Machine is on, hide commits newer than the cursor so history
+  // replays. Filtering happens on the DTO before layout, so positions of the
+  // surviving commits stay identical to the full graph.
+  const visibleGraph = useMemo<CommitGraphDTO | undefined>(() => {
+    if (!graph) return undefined
+    if (!tm.enabled || !Number.isFinite(tm.cursor)) return graph
+    const nodes = graph.nodes.filter((n) => n.timestamp <= tm.cursor)
+    const visible = new Set(nodes.map((n) => n.id))
+    return {
+      ...graph,
+      nodes,
+      edges: graph.edges.filter((e) => visible.has(e.source) && visible.has(e.target)),
+    }
+  }, [graph, tm.enabled, tm.cursor])
 
   const { nodes, edges } = useMemo(() => {
-    if (!graph) return { nodes: [], edges: [] }
+    if (!visibleGraph) return { nodes: [], edges: [] }
     return buildFlow({
-      graph,
+      graph: visibleGraph,
       selectedId,
       hoveredId,
       onSelect: selectCommit,
       onHover: hoverCommit,
     })
-  }, [graph, selectedId, hoveredId, selectCommit, hoverCommit])
+  }, [visibleGraph, selectedId, hoveredId, selectCommit, hoverCommit])
 
   if (isError) {
     return (
@@ -105,6 +123,7 @@ export function CommitGraph() {
           className="!bottom-4 !left-4 rounded-lg border border-border/60 bg-card/80 backdrop-blur [&_button]:!border-border/40 [&_button]:!bg-transparent [&_button:hover]:!bg-accent [&_svg]:!fill-foreground"
         />
       </ReactFlow>
+      <TimeMachineBar />
     </div>
   )
 }
