@@ -45,6 +45,15 @@ Unlike traditional applications that simply wrap Git commands, GitForge recreate
 The project combines a custom backend engine with a premium React frontend to help developers understand **how version control actually works internally**.
 
 ---
+## 🎯 Why GitForge?
+
+Most version control projects simply wrap Git commands behind a user interface.
+
+GitForge takes a fundamentally different approach.
+
+It is a **Git-inspired Version Control System implemented completely from scratch**, without relying on Git internally. Every major component—including object storage, staging, commits, branches, commit history, diff generation, and merge operations—was engineered to understand the internal architecture of distributed version control systems.
+
+The project combines a production-style backend with an interactive frontend that visualizes repository history, making complex version control concepts easier to understand while demonstrating real systems engineering principles.
 
 # 🎯 Motivation
 
@@ -70,6 +79,19 @@ GitForge answers these questions by implementing the underlying concepts from sc
 Visualize repository history as a Directed Acyclic Graph (DAG) with branch relationships and merge commits.
 
 ---
+
+## 🏗️ Key Engineering Challenges
+
+Building GitForge required solving several core systems engineering problems:
+
+- Implemented a **content-addressable object store** inspired by Git's internal architecture.
+- Designed a **Directed Acyclic Graph (DAG)** for commit history traversal and visualization.
+- Built a **three-way merge engine** capable of detecting merge conflicts.
+- Developed a custom **file diff engine** for repository comparison.
+- Implemented **branch creation, checkout, and reference management** without Git.
+- Designed a modular **FastAPI service architecture** separating business logic from API endpoints.
+- Created an interactive **Repository Time Machine** for replaying repository evolution.
+- Built a responsive React dashboard for repository analytics, commit visualization, and developer insights.
 
 ### 🌿 Branch Management
 
@@ -235,6 +257,19 @@ Processes repository history and generates useful development insights.
 | Documentation | Markdown + Mermaid |
 
 ---
+
+## 💡 What I Learned
+
+Through this project I gained hands-on experience with:
+
+- Version Control System Internals
+- Content-Addressable Storage
+- Commit DAG Traversal
+- Merge Algorithms
+- Backend API Design
+- State Management in React
+- Interactive Graph Visualization
+- Software Architecture & System Design
 
 # 📊 Engineering Metrics
 
