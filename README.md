@@ -55,8 +55,6 @@ It is a **Git-inspired Version Control System implemented completely from scratc
 
 The project combines a production-style backend with an interactive frontend that visualizes repository history, making complex version control concepts easier to understand while demonstrating real systems engineering principles.
 
-# 🎯 Motivation
-
 Most developers know how to use Git.
 
 Very few understand:
@@ -80,18 +78,12 @@ Visualize repository history as a Directed Acyclic Graph (DAG) with branch relat
 
 ---
 
-## 🏗️ Key Engineering Challenges
+## 🎯 Project Goals
 
-Building GitForge required solving several core systems engineering problems:
-
-- Implemented a **content-addressable object store** inspired by Git's internal architecture.
-- Designed a **Directed Acyclic Graph (DAG)** for commit history traversal and visualization.
-- Built a **three-way merge engine** capable of detecting merge conflicts.
-- Developed a custom **file diff engine** for repository comparison.
-- Implemented **branch creation, checkout, and reference management** without Git.
-- Designed a modular **FastAPI service architecture** separating business logic from API endpoints.
-- Created an interactive **Repository Time Machine** for replaying repository evolution.
-- Built a responsive React dashboard for repository analytics, commit visualization, and developer insights.
+- Understand the internal design of distributed version control systems.
+- Build a Git-inspired engine without relying on Git commands internally.
+- Visualize repository history through an interactive frontend.
+- Demonstrate systems programming and full-stack engineering skills.
 
 ### 🌿 Branch Management
 
@@ -175,6 +167,18 @@ Includes complete documentation covering:
 - ✅ Educational Documentation
 
 ---
+## 🏗️ Key Engineering Challenges
+
+Building GitForge required solving several core systems engineering problems:
+
+- Implemented a **content-addressable object store** inspired by Git's internal architecture.
+- Designed a **Directed Acyclic Graph (DAG)** for commit history traversal and visualization.
+- Built a **three-way merge engine** capable of detecting merge conflicts.
+- Developed a custom **file diff engine** for repository comparison.
+- Implemented **branch creation, checkout, and reference management** without Git.
+- Designed a modular **FastAPI service architecture** separating business logic from API endpoints.
+- Created an interactive **Repository Time Machine** for replaying repository evolution.
+- Built a responsive React dashboard for repository analytics, commit visualization, and developer insights.
 
 # 🏗 System Architecture
 
@@ -260,16 +264,16 @@ Processes repository history and generates useful development insights.
 
 ## 💡 What I Learned
 
-Through this project I gained hands-on experience with:
+Building GitForge gave me hands-on experience with:
 
-- Version Control System Internals
+- Designing a Git-inspired Version Control System from first principles
 - Content-Addressable Storage
-- Commit DAG Traversal
-- Merge Algorithms
-- Backend API Design
-- State Management in React
+- Commit DAG Construction and Traversal
+- Three-Way Merge and Diff Algorithms
+- Backend Architecture with FastAPI
+- React + TypeScript State Management
 - Interactive Graph Visualization
-- Software Architecture & System Design
+- Software Architecture and Modular System Design
 
 # 📊 Engineering Metrics
 
@@ -346,4 +350,13 @@ Repository --> TimeMachine
 ```
 
 ---
+# 🚀 Future Improvements
+
+- Remote Repository Support
+- Pack File Compression
+- Binary File Diff Support
+- User Authentication
+- Repository Collaboration
+- GitHub-style Pull Requests
+- Performance Optimizations
 
