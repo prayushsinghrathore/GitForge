@@ -41,7 +41,10 @@ class InsightService:
         if avg > 0 and size > max(3 * avg, 50):
             out.append(f"This commit is unusually large (+{info.insertions}/-{info.deletions}).")
 
-        paths = self._changed_paths(info)
+        try:
+            paths = self._changed_paths(info)
+        except KeyError:
+            paths = []
         if any(any(h in p.lower() for h in SENSITIVE_HINTS) for p in paths):
             out.append("Modifies authentication/security-related files.")
         if any(any(h in p.lower() for h in CONFIG_HINTS) for p in paths):
