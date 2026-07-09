@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 from typing import Optional
 
-from ..core import Repository, RepositoryError
+from ..core import Repository
 from ..core.dag import ancestors
 from ..core.diff import LineOp
 from ..core.repository import CommitInfo

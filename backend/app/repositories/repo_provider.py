@@ -13,7 +13,6 @@ the user having to script one by hand.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 from ..core import Repository
 from .seed import seed_demo_repository

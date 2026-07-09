@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
-import pytest
-
 from app.services.repo_service import RepoService
 
 
@@ -58,7 +54,7 @@ def test_blame_deleted_lines_are_skipped(repo, clock):
     c1 = repo.commit("first", "Alice", clock())
 
     repo.stage_file("test.txt", b"keep\nkeep2\n")
-    c2 = repo.commit("removed middle", "Alice", clock())
+    repo.commit("removed middle", "Alice", clock())
 
     result = RepoService(repo).blame("test.txt")
     assert len(result.lines) == 2

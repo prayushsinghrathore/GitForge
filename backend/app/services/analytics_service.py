@@ -13,7 +13,6 @@ from collections import Counter, defaultdict
 from typing import Optional
 
 from ..core import Repository
-from ..core.objects import ObjectType
 from ..dto import RepoOverviewDTO
 from .insight_service import InsightService
 from .repo_service import commit_to_dto
