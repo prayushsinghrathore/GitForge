@@ -12,12 +12,14 @@ import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api.dependencies import DATA_DIR
+from .api.dependencies import DATA_DIR, get_provider
 from .api.routes import router
+from .dto import ImportRepoRequest, ImportStatusDTO
 from .repositories import RepositoryProvider
+from .services.import_service import import_github
 
 
 def create_app(data_dir: Path | None = None) -> FastAPI:
@@ -53,6 +55,17 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
     @app.get("/api/repos", tags=["repository"])
     def list_repos():
         return {"repositories": app.state.provider.list_names()}
+
+    @app.post("/api/import/github", tags=["import"])
+    def import_remote(
+        body: ImportRepoRequest,
+        provider: RepositoryProvider = Depends(get_provider),
+    ):
+        try:
+            name, count = import_github(body.repo_url, provider, name=body.name)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc))
+        return ImportStatusDTO(name=name, commit_count=count, status="imported")
 
     return app
 

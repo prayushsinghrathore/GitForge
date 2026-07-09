@@ -17,6 +17,7 @@ from ..dto import (
     BranchRequest,
     CommitRequest,
     MergeRequest,
+    RestoreRequest,
     StageRequest,
 )
 from .dependencies import (
@@ -83,6 +84,11 @@ def file_history(svc: RepoServiceDep, path: str):
     return svc.file_history(path)
 
 
+@router.get("/blame")
+def blame_file(svc: RepoServiceDep, path: str):
+    return svc.blame(path)
+
+
 # --------------------------------------------------------------------------- #
 # analytics
 # --------------------------------------------------------------------------- #
@@ -125,3 +131,9 @@ def checkout(body: BranchRequest, svc: RepoServiceDep):
 @router.post("/merge")
 def merge(body: MergeRequest, svc: RepoServiceDep):
     return _guard(lambda: svc.merge(body.branch, body.author))
+
+
+@router.post("/restore")
+def restore_file(body: RestoreRequest, svc: RepoServiceDep):
+    _guard(lambda: svc.restore(body.path, commit_id=body.commit_id))
+    return {"ok": True}

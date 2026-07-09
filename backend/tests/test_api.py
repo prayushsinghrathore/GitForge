@@ -80,3 +80,76 @@ def test_commit_without_staging_returns_409(client):
         "/api/repos/demo/merge", json={"branch": "does-not-exist", "author": "x"}
     )
     assert res.status_code == 409
+
+
+# --------------------------------------------------------------------------- #
+# blame endpoint
+# --------------------------------------------------------------------------- #
+def test_blame_endpoint_returns_lines(client):
+    # Stage & commit a known file first, so we control the content.
+    client.post("/api/repos/demo/stage", json={"path": "blame_me.txt", "content": "hello\nworld\n"})
+    client.post("/api/repos/demo/commit", json={"message": "add blame_me", "author": "Tester"})
+
+    res = client.get("/api/repos/demo/blame?path=blame_me.txt")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["path"] == "blame_me.txt"
+    assert len(data["lines"]) == 2
+    line = data["lines"][0]
+    assert "commit_id" in line
+    assert "short_id" in line
+    assert "author" in line
+    assert "content" in line
+    assert "lineno" in line
+
+
+def test_blame_nonexistent_file_returns_empty(client):
+    res = client.get("/api/repos/demo/blame?path=nope.txt")
+    assert res.status_code == 200
+    assert res.json()["lines"] == []
+
+
+# --------------------------------------------------------------------------- #
+# restore endpoint
+# --------------------------------------------------------------------------- #
+def test_restore_known_file_returns_ok(client):
+    # Stage, commit, then re-stage to ensure restore has a prior version.
+    client.post("/api/repos/demo/stage", json={"path": "restore_me.txt", "content": "original"})
+    client.post("/api/repos/demo/commit", json={"message": "add restore_me", "author": "Tester"})
+    # Fetch the commit id of what we just committed.
+    log = client.get("/api/repos/demo/log").json()
+    first_id = log[0]["id"]  # HEAD = the commit we just created
+
+    res = client.post(
+        "/api/repos/demo/restore",
+        json={"path": "restore_me.txt", "commit_id": first_id},
+    )
+    assert res.status_code == 200
+    assert res.json() == {"ok": True}
+
+
+def test_restore_missing_file_returns_409(client):
+    res = client.post(
+        "/api/repos/demo/restore",
+        json={"path": "does-not-exist.txt"},
+    )
+    assert res.status_code == 409
+
+
+# --------------------------------------------------------------------------- #
+# import endpoint
+# --------------------------------------------------------------------------- #
+def test_import_invalid_url_returns_422(client):
+    """A URL that isn't a GitHub repo should return 422."""
+    res = client.post(
+        "/api/import/github",
+        json={"repo_url": "not-a-valid-github-url"},
+    )
+    assert res.status_code == 422
+    assert "detail" in res.json()
+
+
+def test_import_endpoint_missing_url_returns_422(client):
+    """Missing required repo_url should trigger FastAPI validation."""
+    res = client.post("/api/import/github", json={})
+    assert res.status_code == 422

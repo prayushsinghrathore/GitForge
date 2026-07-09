@@ -6,6 +6,8 @@ Pydantic models, so the API can evolve independently of engine internals.
 """
 
 from .schemas import (
+    BlameFileDTO,
+    BlameLineDTO,
     BranchDTO,
     BranchRequest,
     CommitDTO,
@@ -17,14 +19,19 @@ from .schemas import (
     DiffFileDTO,
     DiffLineDTO,
     FileHistoryDTO,
+    ImportRepoRequest,
+    ImportStatusDTO,
     InsightDTO,
     MergeRequest,
     RepoOverviewDTO,
+    RestoreRequest,
     StageRequest,
     StatusDTO,
 )
 
 __all__ = [
+    "BlameFileDTO",
+    "BlameLineDTO",
     "BranchDTO",
     "BranchRequest",
     "CommitDTO",
@@ -36,9 +43,12 @@ __all__ = [
     "DiffFileDTO",
     "DiffLineDTO",
     "FileHistoryDTO",
+    "ImportRepoRequest",
+    "ImportStatusDTO",
     "InsightDTO",
     "MergeRequest",
     "RepoOverviewDTO",
+    "RestoreRequest",
     "StageRequest",
     "StatusDTO",
 ]

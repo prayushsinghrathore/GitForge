@@ -25,6 +25,11 @@ class MergeRequest(BaseModel):
     author: str = "GitForge User"
 
 
+class RestoreRequest(BaseModel):
+    path: str = Field(..., description="Repo-relative file path to restore")
+    commit_id: Optional[str] = Field(None, description="Commit to restore from (HEAD if omitted)")
+
+
 class BranchRequest(BaseModel):
     name: str
     at: Optional[str] = None
@@ -123,9 +128,35 @@ class FileHistoryDTO(BaseModel):
     commits: list[CommitDTO]
 
 
+class BlameLineDTO(BaseModel):
+    lineno: int
+    content: str
+    commit_id: str
+    short_id: str
+    author: str
+    timestamp: int
+    message: str
+
+
+class BlameFileDTO(BaseModel):
+    path: str
+    lines: list[BlameLineDTO]
+
+
 # --------------------------------------------------------------------------- #
 # analytics / insights
 # --------------------------------------------------------------------------- #
+class ImportRepoRequest(BaseModel):
+    repo_url: str = Field(..., description="GitHub repository URL to import")
+    name: Optional[str] = Field(None, description="Optional custom name for the new repository")
+
+
+class ImportStatusDTO(BaseModel):
+    name: str
+    commit_count: int
+    status: str = "imported"
+
+
 class InsightDTO(BaseModel):
     kind: str  # info | warning | risk
     title: str

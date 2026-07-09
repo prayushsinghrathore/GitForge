@@ -230,6 +230,14 @@ class Repository:
         self._advance_head(merge_commit.id)
         return merge_commit.id
 
+    # -- file content ------------------------------------------------------ #
+    def file_content(self, path: str, commit_id: str) -> Optional[bytes]:
+        """Return the content of ``path`` at ``commit_id``, or ``None``."""
+        blob_id = self._commit_blob_map(commit_id).get(_normalize(path))
+        if blob_id is None:
+            return None
+        return self.objects.get_blob(blob_id).data
+
     # -- diff / status ------------------------------------------------------ #
     def diff_commits(self, old_id: Optional[str], new_id: str) -> dict[str, FileDiff]:
         """Per-file diff between two commits (or from nothing -> ``new_id``)."""
