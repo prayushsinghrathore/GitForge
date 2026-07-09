@@ -99,7 +99,8 @@ export function useListRepos() {
 }
 
 export function useBlame(path: string | null, repo?: string) {
-  const activeRepo = repo ?? useRepoStore((s) => s.repo)
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
   return useQuery({
     queryKey: queryKeys.blame(activeRepo, path ?? ''),
     queryFn: () => api.blame(activeRepo, path as string),

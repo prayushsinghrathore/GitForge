@@ -159,7 +159,7 @@ def _import_commit(repo, git_dir: Path, sha: str) -> None:
     # -- author & message -------------------------------------------------- #
     log_info = subprocess.run(
         ["git", "--git-dir", str(git_dir), "log", "-1",
-         "--format=%an <%ae>%00%at%00%B", sha],
+         "--format=%an <%ae>%x00%at%x00%B", sha],
         capture_output=True, text=True, check=True, timeout=30,
     )
     parts = log_info.stdout.strip().split("\x00", 2)
