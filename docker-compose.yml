@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gitforge-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - gitforge-data:/root/.gitforge-data
+    environment:
+      - GITFORGE_DATA=/root/.gitforge-data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gitforge-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  gitforge-data:
