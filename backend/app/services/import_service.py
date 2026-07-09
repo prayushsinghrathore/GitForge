@@ -145,7 +145,10 @@ def _import_from_bare(
     # ------------------------------------------------------------------ #
     for bname, bsha in branches.items():
         if bsha in sha_map:
-            repo.refs.create_branch(bname, sha_map[bsha])
+            if repo.refs.branch_exists(bname):
+                repo.refs.update_branch(bname, sha_map[bsha])
+            else:
+                repo.refs.create_branch(bname, sha_map[bsha])
 
     # Switch HEAD to the imported repo's default branch.
     if repo.refs.branch_exists(head_branch):

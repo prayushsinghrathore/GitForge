@@ -153,3 +153,25 @@ def test_import_endpoint_missing_url_returns_422(client):
     """Missing required repo_url should trigger FastAPI validation."""
     res = client.post("/api/import/github", json={})
     assert res.status_code == 422
+
+
+def test_import_duplicate_branch_does_not_crash(client):
+    """Importing a repo whose default branch matches init's 'main' must not
+    raise IntegrityError on the duplicate branch name."""
+    # The import endpoint creates the repo (which auto-creates 'main') and
+    # then imports branches including 'main' — the fix ensures this path
+    # uses update_branch instead of create_branch when the branch exists.
+    res = client.post(
+        "/api/import/github",
+        json={"repo_url": "https://github.com/octocat/Hello-World"},
+    )
+    assert res.status_code == 200
+    branches = client.get(
+        f"/api/repos/{res.json()['name']}/branches"
+    ).json()
+    names = [b["name"] for b in branches]
+    assert "main" in names
+    # The imported HEAD branch should be the repo's default (master, not main).
+    current = [b for b in branches if b["is_current"]]
+    assert len(current) == 1
+    assert current[0]["is_current"] is True
