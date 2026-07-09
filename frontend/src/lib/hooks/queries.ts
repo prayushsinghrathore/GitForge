@@ -6,7 +6,7 @@
  * mutations (which invalidate explicitly).
  */
 import { useQuery } from '@tanstack/react-query'
-import { api, DEFAULT_REPO } from '@/lib/api/endpoints'
+import { api } from '@/lib/api/endpoints'
 import { useRepoStore } from '@/store/useRepoStore'
 
 const FIVE_MIN = 5 * 60 * 1000
@@ -30,61 +30,75 @@ export function useHealth() {
   return useQuery({ queryKey: queryKeys.health, queryFn: api.health, staleTime: FIVE_MIN })
 }
 
-export function useGraph(repo: string = DEFAULT_REPO) {
+export function useGraph(repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
   return useQuery({
-    queryKey: queryKeys.graph(repo),
-    queryFn: () => api.graph(repo),
+    queryKey: queryKeys.graph(activeRepo),
+    queryFn: () => api.graph(activeRepo),
     staleTime: FIVE_MIN,
   })
 }
 
-export function useBranches(repo: string = DEFAULT_REPO) {
+export function useBranches(repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
   return useQuery({
-    queryKey: queryKeys.branches(repo),
-    queryFn: () => api.branches(repo),
+    queryKey: queryKeys.branches(activeRepo),
+    queryFn: () => api.branches(activeRepo),
     staleTime: FIVE_MIN,
   })
 }
 
-export function useAnalytics(repo: string = DEFAULT_REPO) {
+export function useAnalytics(repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
   return useQuery({
-    queryKey: queryKeys.analytics(repo),
-    queryFn: () => api.analytics(repo),
+    queryKey: queryKeys.analytics(activeRepo),
+    queryFn: () => api.analytics(activeRepo),
     staleTime: FIVE_MIN,
   })
 }
 
-export function useInsights(repo: string = DEFAULT_REPO) {
+export function useInsights(repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
   return useQuery({
-    queryKey: queryKeys.insights(repo),
-    queryFn: () => api.insights(repo),
+    queryKey: queryKeys.insights(activeRepo),
+    queryFn: () => api.insights(activeRepo),
     staleTime: FIVE_MIN,
   })
 }
 
-export function useCommit(commitId: string | null, repo: string = DEFAULT_REPO) {
+export function useCommit(commitId: string | null, repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
   return useQuery({
-    queryKey: queryKeys.commit(repo, commitId ?? ''),
-    queryFn: () => api.commit(repo, commitId as string),
+    queryKey: queryKeys.commit(activeRepo, commitId ?? ''),
+    queryFn: () => api.commit(activeRepo, commitId as string),
     enabled: Boolean(commitId),
     staleTime: FIVE_MIN,
   })
 }
 
 /** Full file snapshot at a commit (diff from empty tree → commit). */
-export function useSnapshot(commitId: string | null, repo: string = DEFAULT_REPO) {
+export function useSnapshot(commitId: string | null, repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
   return useQuery({
-    queryKey: queryKeys.snapshot(repo, commitId ?? ''),
-    queryFn: () => api.diff(repo, commitId as string),
+    queryKey: queryKeys.snapshot(activeRepo, commitId ?? ''),
+    queryFn: () => api.diff(activeRepo, commitId as string),
     enabled: Boolean(commitId),
     staleTime: FIVE_MIN,
   })
 }
 
-export function useFileHistory(path: string | null, repo: string = DEFAULT_REPO) {
+export function useFileHistory(path: string | null, repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
   return useQuery({
-    queryKey: queryKeys.fileHistory(repo, path ?? ''),
-    queryFn: () => api.fileHistory(repo, path as string),
+    queryKey: queryKeys.fileHistory(activeRepo, path ?? ''),
+    queryFn: () => api.fileHistory(activeRepo, path as string),
     enabled: Boolean(path),
     staleTime: FIVE_MIN,
   })

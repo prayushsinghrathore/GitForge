@@ -8,8 +8,9 @@
  * `detail`, which callers can surface directly.
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { api, DEFAULT_REPO } from '@/lib/api/endpoints'
+import { api } from '@/lib/api/endpoints'
 import { queryKeys } from '@/lib/hooks/queries'
+import { useRepoStore } from '@/store/useRepoStore'
 import type {
   BranchRequest,
   CommitRequest,
@@ -23,60 +24,72 @@ import type {
 function useRepoInvalidator(repo: string) {
   const qc = useQueryClient()
   return () => {
-    for (const key of ['graph', 'branches', 'status', 'analytics', 'insights'] as const) {
+    for (const key of ['graph', 'branches', 'status', 'analytics', 'insights', 'blame'] as const) {
       qc.invalidateQueries({ queryKey: [key, repo] })
     }
   }
 }
 
-export function useStage(repo: string = DEFAULT_REPO) {
-  const invalidate = useRepoInvalidator(repo)
+export function useStage(repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
+  const invalidate = useRepoInvalidator(activeRepo)
   return useMutation({
-    mutationFn: (body: StageRequest) => api.stage(repo, body),
+    mutationFn: (body: StageRequest) => api.stage(activeRepo, body),
     onSuccess: invalidate,
   })
 }
 
-export function useCommit(repo: string = DEFAULT_REPO) {
-  const invalidate = useRepoInvalidator(repo)
+export function useCommit(repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
+  const invalidate = useRepoInvalidator(activeRepo)
   return useMutation({
-    mutationFn: (body: CommitRequest) => api.commitChanges(repo, body),
+    mutationFn: (body: CommitRequest) => api.commitChanges(activeRepo, body),
     onSuccess: invalidate,
   })
 }
 
-export function useCreateBranch(repo: string = DEFAULT_REPO) {
-  const invalidate = useRepoInvalidator(repo)
+export function useCreateBranch(repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
+  const invalidate = useRepoInvalidator(activeRepo)
   return useMutation({
-    mutationFn: (body: BranchRequest) => api.createBranch(repo, body),
+    mutationFn: (body: BranchRequest) => api.createBranch(activeRepo, body),
     onSuccess: invalidate,
   })
 }
 
-export function useCheckout(repo: string = DEFAULT_REPO) {
-  const invalidate = useRepoInvalidator(repo)
+export function useCheckout(repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
+  const invalidate = useRepoInvalidator(activeRepo)
   return useMutation({
-    mutationFn: (body: BranchRequest) => api.checkout(repo, body),
+    mutationFn: (body: BranchRequest) => api.checkout(activeRepo, body),
     onSuccess: invalidate,
   })
 }
 
-export function useMerge(repo: string = DEFAULT_REPO) {
-  const invalidate = useRepoInvalidator(repo)
+export function useMerge(repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
+  const invalidate = useRepoInvalidator(activeRepo)
   return useMutation({
-    mutationFn: (body: MergeRequest) => api.merge(repo, body),
+    mutationFn: (body: MergeRequest) => api.merge(activeRepo, body),
     onSuccess: invalidate,
   })
 }
 
-export function useRestore(repo: string = DEFAULT_REPO) {
+export function useRestore(repo?: string) {
+  const storeRepo = useRepoStore((s) => s.repo)
+  const activeRepo = repo ?? storeRepo
   const qc = useQueryClient()
-  const invalidate = useRepoInvalidator(repo)
+  const invalidate = useRepoInvalidator(activeRepo)
   return useMutation({
-    mutationFn: (body: RestoreRequest) => api.restore(repo, body),
+    mutationFn: (body: RestoreRequest) => api.restore(activeRepo, body),
     onSuccess: () => {
       invalidate()
-      qc.invalidateQueries({ queryKey: ['blame', repo] })
+      qc.invalidateQueries({ queryKey: ['blame', activeRepo] })
     },
   })
 }

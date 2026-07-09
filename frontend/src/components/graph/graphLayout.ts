@@ -76,7 +76,3 @@ function neighborSet(graph: CommitGraphDTO, id: string): Set<string> {
   return set
 }
 
-/** Total canvas height in px for the given graph (used to size the flow). */
-export function graphHeight(graph: CommitGraphDTO): number {
-  return GRAPH_PADDING * 2 + graph.nodes.length * ROW_HEIGHT
-}
