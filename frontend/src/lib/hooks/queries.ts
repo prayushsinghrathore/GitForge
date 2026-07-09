@@ -7,6 +7,7 @@
  */
 import { useQuery } from '@tanstack/react-query'
 import { api, DEFAULT_REPO } from '@/lib/api/endpoints'
+import { useRepoStore } from '@/store/useRepoStore'
 
 const FIVE_MIN = 5 * 60 * 1000
 
@@ -21,6 +22,8 @@ export const queryKeys = {
   diff: (repo: string, newId: string, oldId?: string) => ['diff', repo, newId, oldId ?? null] as const,
   fileHistory: (repo: string, path: string) => ['fileHistory', repo, path] as const,
   snapshot: (repo: string, id: string) => ['snapshot', repo, id] as const,
+  repos: ['repos'] as const,
+  blame: (repo: string, path: string) => ['blame', repo, path] as const,
 }
 
 export function useHealth() {
@@ -82,6 +85,24 @@ export function useFileHistory(path: string | null, repo: string = DEFAULT_REPO)
   return useQuery({
     queryKey: queryKeys.fileHistory(repo, path ?? ''),
     queryFn: () => api.fileHistory(repo, path as string),
+    enabled: Boolean(path),
+    staleTime: FIVE_MIN,
+  })
+}
+
+export function useListRepos() {
+  return useQuery({
+    queryKey: queryKeys.repos,
+    queryFn: () => api.listRepos(),
+    staleTime: FIVE_MIN,
+  })
+}
+
+export function useBlame(path: string | null, repo?: string) {
+  const activeRepo = repo ?? useRepoStore((s) => s.repo)
+  return useQuery({
+    queryKey: queryKeys.blame(activeRepo, path ?? ''),
+    queryFn: () => api.blame(activeRepo, path as string),
     enabled: Boolean(path),
     staleTime: FIVE_MIN,
   })

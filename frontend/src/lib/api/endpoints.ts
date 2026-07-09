@@ -7,6 +7,7 @@
  */
 import { http } from './client'
 import type {
+  BlameFileDTO,
   BranchDTO,
   BranchRequest,
   CommitDTO,
@@ -16,10 +17,13 @@ import type {
   DiffFileDTO,
   FileHistoryDTO,
   HealthDTO,
+  ImportRepoRequest,
+  ImportStatusDTO,
+  InsightDTO,
   MergeRequest,
   OkDTO,
   RepoOverviewDTO,
-  InsightDTO,
+  RestoreRequest,
   StageRequest,
   StatusDTO,
 } from './types'
@@ -61,6 +65,16 @@ export const api = {
     http.post<OkDTO>(`${repoBase(repo)}/checkout`, body),
   merge: (repo: string, body: MergeRequest) =>
     http.post<CommitDTO>(`${repoBase(repo)}/merge`, body),
+  restore: (repo: string, body: RestoreRequest) =>
+    http.post<OkDTO>(`${repoBase(repo)}/restore`, body),
+
+  // ── blame ──────────────────────────────────────────────────────────────────
+  blame: (repo: string, path: string) =>
+    http.get<BlameFileDTO>(`${repoBase(repo)}/blame`, { path }),
+
+  // ── import ─────────────────────────────────────────────────────────────────
+  importGithub: (body: ImportRepoRequest) =>
+    http.post<ImportStatusDTO>('/import/github', body),
 }
 
 export const DEFAULT_REPO = 'demo'

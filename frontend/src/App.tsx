@@ -2,6 +2,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { MainPanel } from '@/components/layout/MainPanel'
 import { RightPanelContent } from '@/components/layout/RightPanelContent'
 import { CommandPalette } from '@/components/command/CommandPalette'
+import { ImportRepoDialog } from '@/components/home/ImportRepoDialog'
 import { useRepoStore } from '@/store/useRepoStore'
 
 /**
@@ -19,6 +20,7 @@ export default function App() {
         activity={activity}
       />
       <CommandPalette />
+      <ImportRepoDialog />
     </>
   )
 }

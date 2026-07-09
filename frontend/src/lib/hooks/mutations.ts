@@ -9,10 +9,13 @@
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api, DEFAULT_REPO } from '@/lib/api/endpoints'
+import { queryKeys } from '@/lib/hooks/queries'
 import type {
   BranchRequest,
   CommitRequest,
+  ImportRepoRequest,
   MergeRequest,
+  RestoreRequest,
   StageRequest,
 } from '@/lib/api/types'
 
@@ -63,5 +66,27 @@ export function useMerge(repo: string = DEFAULT_REPO) {
   return useMutation({
     mutationFn: (body: MergeRequest) => api.merge(repo, body),
     onSuccess: invalidate,
+  })
+}
+
+export function useRestore(repo: string = DEFAULT_REPO) {
+  const qc = useQueryClient()
+  const invalidate = useRepoInvalidator(repo)
+  return useMutation({
+    mutationFn: (body: RestoreRequest) => api.restore(repo, body),
+    onSuccess: () => {
+      invalidate()
+      qc.invalidateQueries({ queryKey: ['blame', repo] })
+    },
+  })
+}
+
+export function useImportRepo() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: ImportRepoRequest) => api.importGithub(body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.repos })
+    },
   })
 }

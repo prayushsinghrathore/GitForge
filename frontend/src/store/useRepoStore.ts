@@ -38,6 +38,9 @@ export interface RepoState {
   // command palette
   paletteOpen: boolean
 
+  // import dialog
+  importDialogOpen: boolean
+
   // activity log (mutation feedback surfaced in the bottom bar)
   activity: string[]
 
@@ -54,6 +57,8 @@ export interface RepoState {
   setSearchOpen: (open: boolean) => void
   setPaletteOpen: (open: boolean) => void
   togglePalette: () => void
+  setRepo: (name: string) => void
+  setImportDialogOpen: (open: boolean) => void
   pushActivity: (line: string) => void
   toggleTimeMachine: (bounds?: { min: number; max: number }) => void
   setTimeCursor: (cursor: number) => void
@@ -76,6 +81,8 @@ export const useRepoStore = create<RepoState>((set) => ({
 
   paletteOpen: false,
 
+  importDialogOpen: false,
+
   activity: [],
 
   timeMachine: { enabled: false, cursor: Number.POSITIVE_INFINITY, playing: false, speed: 1 },
@@ -89,6 +96,8 @@ export const useRepoStore = create<RepoState>((set) => ({
   setSearchOpen: (open) => set({ searchOpen: open }),
   setPaletteOpen: (open) => set({ paletteOpen: open }),
   togglePalette: () => set((s) => ({ paletteOpen: !s.paletteOpen })),
+  setRepo: (name) => set({ repo: name, selectedCommitId: null, inspectorOpen: false }),
+  setImportDialogOpen: (open) => set({ importDialogOpen: open }),
   pushActivity: (line) => set((s) => ({ activity: [...s.activity, line].slice(-100) })),
 
   toggleTimeMachine: (bounds) =>

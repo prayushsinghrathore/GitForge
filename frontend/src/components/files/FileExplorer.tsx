@@ -1,13 +1,16 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { File, History, FileCode2, AlertTriangle } from 'lucide-react'
+import { File, History, FileCode2, AlertTriangle, GitCommitHorizontal, RotateCcw, Loader2 } from 'lucide-react'
 import { useGraph, useSnapshot, useFileHistory } from '@/lib/hooks/queries'
+import { useRestore } from '@/lib/hooks/mutations'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AuthorAvatar } from '@/components/common/AuthorAvatar'
 import { useRepoStore } from '@/store/useRepoStore'
-import { relativeTime, formatDateTime } from '@/lib/format'
+import { relativeTime, formatDateTime, shortHash } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { DiffFileDTO } from '@/lib/api/types'
+import { BlameAnnotations } from './BlameAnnotations'
+import { ApiError } from '@/lib/api/client'
 
 /**
  * Repository explorer. Uses the HEAD snapshot (a diff from the empty tree, so
@@ -20,6 +23,8 @@ export function FileExplorer() {
   const head = graph?.head ?? null
   const { data: snapshot, isLoading, isError } = useSnapshot(head)
   const [activePath, setActivePath] = useState<string | null>(null)
+
+  const [blameMode, setBlameMode] = useState(false)
 
   const files = useMemo(
     () => (snapshot ? [...snapshot].sort((a, b) => a.path.localeCompare(b.path)) : []),
@@ -79,13 +84,30 @@ export function FileExplorer() {
         </div>
       </div>
 
-      {/* File content + history */}
+      {/* File content + history / blame */}
       <div className="flex min-w-0 flex-1 flex-col">
         {selectedFile ? (
-          <FileDetail file={selectedFile} />
+          blameMode ? (
+            <div className="grid min-h-0 flex-1 grid-cols-[1fr_280px]">
+              <BlameAnnotations path={selected} />
+              <FileHistoryList path={selected} />
+            </div>
+          ) : (
+            <FileDetail file={selectedFile} onBlameToggle={() => setBlameMode(true)} />
+          )
         ) : (
           <div className="grid flex-1 place-items-center text-sm text-muted-foreground">
             {isLoading ? 'Loading…' : 'Select a file to view its contents.'}
+          </div>
+        )}
+        {blameMode && selected && (
+          <div className="border-t border-border/50 px-5 py-1.5">
+            <button
+              onClick={() => setBlameMode(false)}
+              className="text-[11px] text-muted-foreground hover:text-foreground"
+            >
+              ← Back to file content
+            </button>
           </div>
         )}
       </div>
@@ -93,13 +115,21 @@ export function FileExplorer() {
   )
 }
 
-function FileDetail({ file }: { file: DiffFileDTO }) {
+function FileDetail({ file, onBlameToggle }: { file: DiffFileDTO; onBlameToggle: () => void }) {
   return (
     <>
       <div className="flex items-center gap-2 border-b border-border/50 px-5 py-3">
         <File className="size-4 text-muted-foreground" />
         <span className="font-mono text-sm text-foreground">{file.path}</span>
-        <span className="ml-auto text-[11px] text-muted-foreground">
+        <button
+          onClick={onBlameToggle}
+          className="ml-auto flex items-center gap-1.5 rounded-md bg-secondary/60 px-2 py-1 text-[10px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          title="Show blame annotations"
+        >
+          <GitCommitHorizontal className="size-3" />
+          Blame
+        </button>
+        <span className="text-[11px] text-muted-foreground">
           {file.lines.length} lines
         </span>
       </div>
@@ -132,6 +162,19 @@ function FileHistoryList({ path }: { path: string }) {
   const { data, isLoading } = useFileHistory(path)
   const selectCommit = useRepoStore((s) => s.selectCommit)
   const setPanel = useRepoStore((s) => s.setPanel)
+  const pushActivity = useRepoStore((s) => s.pushActivity)
+  const activeRepo = useRepoStore((s) => s.repo)
+  const restore = useRestore(activeRepo)
+
+  const handleRestore = (commitId: string, message: string) => {
+    restore.mutate(
+      { path, commit_id: commitId },
+      {
+        onSuccess: () => pushActivity(`✓ restored ${path} from ${shortHash(commitId)}: ${message}`),
+        onError: (e) => pushActivity(`✗ ${e instanceof ApiError ? (e.detail ?? e.message) : 'restore failed'}`),
+      },
+    )
+  }
 
   return (
     <div>
@@ -155,13 +198,14 @@ function FileHistoryList({ path }: { path: string }) {
               initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.03 }}
+              className="group relative"
             >
               <button
                 onClick={() => {
                   setPanel('graph')
                   selectCommit(c.id)
                 }}
-                className="flex w-full items-start gap-2 rounded-lg p-2 text-left hover:bg-accent/50"
+                className="flex w-full items-start gap-2 rounded-lg p-2 pr-8 text-left hover:bg-accent/50"
               >
                 <AuthorAvatar name={c.author} size={20} />
                 <div className="min-w-0 flex-1">
@@ -173,6 +217,18 @@ function FileHistoryList({ path }: { path: string }) {
                     <span className="font-mono">{c.short}</span> · {relativeTime(c.timestamp)}
                   </p>
                 </div>
+              </button>
+              <button
+                onClick={() => handleRestore(c.id, c.message)}
+                disabled={restore.isPending}
+                className="absolute right-1 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground/40 opacity-0 transition-all hover:text-forge-cyan group-hover:opacity-100 disabled:opacity-30"
+                title={`Restore ${path} from this commit`}
+              >
+                {restore.isPending && restore.variables?.commit_id === c.id ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <RotateCcw className="size-3.5" />
+                )}
               </button>
             </motion.li>
           ))}

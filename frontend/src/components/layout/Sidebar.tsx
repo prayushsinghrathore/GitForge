@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { GitGraph, GitBranch, BarChart3, Search, Settings, History } from 'lucide-react'
+import { GithubIcon } from '@/lib/github-icon'
 import { Brand } from './Brand'
 import { Button } from '@/components/ui/button'
 import {
@@ -32,6 +33,7 @@ export function Sidebar() {
   const toggleTimeMachine = useRepoStore((s) => s.toggleTimeMachine)
   const tmEnabled = useRepoStore((s) => s.timeMachine.enabled)
   const pushActivity = useRepoStore((s) => s.pushActivity)
+  const setImportDialogOpen = useRepoStore((s) => s.setImportDialogOpen)
 
   return (
     <aside className="glass flex w-[248px] shrink-0 flex-col gap-1 rounded-none border-y-0 border-l-0 p-3">
@@ -85,10 +87,14 @@ export function Sidebar() {
         >
           <History className="size-4" />
         </SidebarAction>
+        <SidebarAction hint="Import Repository" onClick={() => setImportDialogOpen(true)}>
+          <GithubIcon className="size-4" />
+        </SidebarAction>
         <SidebarAction hint="Command Palette (⌘K)" onClick={togglePalette}>
           <Settings className="size-4" />
         </SidebarAction>
       </div>
+
     </aside>
   )
 }

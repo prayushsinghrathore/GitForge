@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion'
-import { GitCommitHorizontal, GitBranch, Users, Database, AlertTriangle } from 'lucide-react'
+import { GitCommitHorizontal, GitBranch, Users, Database, ChevronRight, AlertTriangle } from 'lucide-react'
 import { BrandMark } from '@/components/layout/Brand'
 import { Skeleton } from '@/components/ui/skeleton'
+import { GithubIcon } from '@/lib/github-icon'
 import { useAnalytics } from '@/lib/hooks/queries'
+import { useRepoStore } from '@/store/useRepoStore'
 import { formatBytes } from '@/lib/format'
 
 /**
@@ -11,6 +13,7 @@ import { formatBytes } from '@/lib/format'
  */
 export function WelcomeStage() {
   const { data, isLoading, isError } = useAnalytics()
+  const setImportDialogOpen = useRepoStore((s) => s.setImportDialogOpen)
 
   const stats = [
     { label: 'Commits', value: data?.commit_count, icon: GitCommitHorizontal },
@@ -84,7 +87,31 @@ export function WelcomeStage() {
           </div>
         )}
 
-        <p className="mt-10 text-xs text-muted-foreground/70">
+        {/* Import repository card */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45, duration: 0.4 }}
+          className="mx-auto mt-6 max-w-md"
+        >
+          <button
+            onClick={() => setImportDialogOpen(true)}
+            className="glass flex w-full items-center gap-4 rounded-xl p-4 text-left transition-colors hover:bg-accent/40"
+          >
+            <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10">
+              <GithubIcon className="size-5 text-primary" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-foreground">Import a Repository</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Clone a public GitHub repository and explore its history
+              </p>
+            </div>
+            <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+          </button>
+        </motion.div>
+
+        <p className="mt-6 text-xs text-muted-foreground/70">
           Press <kbd className="rounded bg-secondary px-1.5 py-0.5 font-mono">⌘K</kbd> for the
           command palette · <kbd className="rounded bg-secondary px-1.5 py-0.5 font-mono">/</kbd>{' '}
           to search

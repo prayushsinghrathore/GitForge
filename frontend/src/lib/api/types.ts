@@ -145,6 +145,38 @@ export interface MergeRequest {
   author?: string
 }
 
+export interface RestoreRequest {
+  path: string
+  commit_id?: string | null
+}
+
+export interface ImportRepoRequest {
+  repo_url: string
+  name?: string | null
+}
+
+export interface ImportStatusDTO {
+  name: string
+  commit_count: number
+  status: string
+}
+
+// ── blame ────────────────────────────────────────────────────────────────────
+export interface BlameLineDTO {
+  lineno: number
+  content: string
+  commit_id: string
+  short_id: string
+  author: string
+  timestamp: number
+  message: string
+}
+
+export interface BlameFileDTO {
+  path: string
+  lines: BlameLineDTO[]
+}
+
 // ── meta ────────────────────────────────────────────────────────────────────
 export interface HealthDTO {
   status: string
